@@ -10,6 +10,16 @@
     </button>
     
     <button 
+      class="control-btn lap"
+      @click="$emit('add-lap')"
+      :disabled="!isRunning && !currentTime"
+      title="현재 시간을 랩 타임으로 기록"
+    >
+      <span class="btn-icon">⏱</span>
+      <span class="btn-text">랩 타임</span>
+    </button>
+    
+    <button 
       class="control-btn secondary"
       @click="$emit('reset')"
       :disabled="!currentTime && !isRunning"
@@ -32,15 +42,16 @@ defineProps({
   }
 })
 
-defineEmits(['toggle', 'reset'])
+defineEmits(['toggle', 'reset', 'add-lap'])
 </script>
 
 <style scoped>
 .stopwatch-controls {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
   padding: 2rem 0;
+  flex-wrap: wrap;
 }
 
 .control-btn {
@@ -48,25 +59,25 @@ defineEmits(['toggle', 'reset'])
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;
   border: none;
   border-radius: 50px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
-  min-width: 140px;
+  min-width: 120px;
 }
 
-.control-btn:hover {
+.control-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-.control-btn:active {
+.control-btn:active:not(:disabled) {
   transform: translateY(0);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
@@ -87,18 +98,27 @@ defineEmits(['toggle', 'reset'])
   background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
 }
 
+.lap {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  color: white;
+}
+
+.lap:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+}
+
 .secondary {
   background: linear-gradient(135deg, #757575 0%, #616161 100%);
   color: white;
 }
 
 .btn-icon {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   line-height: 1;
 }
 
 .btn-text {
-  font-size: 1rem;
+  font-size: 0.9rem;
   letter-spacing: 0.5px;
 }
 
@@ -117,7 +137,7 @@ defineEmits(['toggle', 'reset'])
   z-index: 0;
 }
 
-.control-btn:active::before {
+.control-btn:active:not(:disabled)::before {
   width: 300px;
   height: 300px;
 }
@@ -131,22 +151,22 @@ defineEmits(['toggle', 'reset'])
 /* 반응형 디자인 */
 @media (max-width: 768px) {
   .stopwatch-controls {
-    gap: 1rem;
+    gap: 0.8rem;
     padding: 1.5rem 0;
   }
   
   .control-btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    min-width: 120px;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+    min-width: 100px;
   }
   
   .btn-icon {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   
   .btn-text {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -155,10 +175,33 @@ defineEmits(['toggle', 'reset'])
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    padding: 1rem 0;
   }
   
   .control-btn {
     width: 200px;
+    padding: 1rem 1.5rem;
   }
+  
+  .btn-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* 추가 애니메이션 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.lap:not(:disabled) {
+  animation: pulse 2s ease-in-out infinite;
 }
 </style> 
