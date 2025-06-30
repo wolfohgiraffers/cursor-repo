@@ -50,7 +50,7 @@ onMounted(() => {
         스톱워치
       </h1>
       <p class="app-subtitle">정확하고 직관적인 시간 측정</p>
-    
+    </header>
 
     <main class="app-main">
       <div class="container">
