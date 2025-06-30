@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { useStopwatch } from './composables/useStopwatch.js'
 import StopwatchDisplay from './components/Stopwatch/StopwatchDisplay.vue'
 import StopwatchControls from './components/Stopwatch/StopwatchControls.vue'
+import LapTimeList from './components/Stopwatch/LapTimeList.vue'
 import { useKeyboard } from './composables/useKeyboard.js'
 
 // 스톱워치 로직
@@ -10,9 +11,14 @@ const {
   isRunning, 
   currentTime, 
   formattedTime, 
+  lapTimes,
+  lapStats,
   start, 
   pause, 
-  reset 
+  reset,
+  addLap,
+  clearLaps,
+  formatTime
 } = useStopwatch()
 
 // 토글 함수
@@ -32,13 +38,14 @@ const isMobile = computed(() => {
 // 키보드 단축키 설정
 useKeyboard({
   onToggle: toggle,
-  onReset: reset
+  onReset: reset,
+  onLap: addLap
 })
 
 // 컴포넌트 마운트 시 환영 메시지
 onMounted(() => {
   console.log('⏱️ 스톱워치 앱이 시작되었습니다!')
-  console.log('키보드 단축키: Space(시작/정지), R(리셋)')
+  console.log('키보드 단축키: Space(시작/정지), R(리셋), L(랩 타임)')
 })
 </script>
 
@@ -50,8 +57,9 @@ onMounted(() => {
         스톱워치
       </h1>
       <p class="app-subtitle">정확하고 직관적인 시간 측정</p>
+    <!-- </header> -->
 
-    <main class="app-main">
+    <!-- <main class="app-main"> -->
       <div class="container">
         <StopwatchDisplay 
           :formatted-time="formattedTime"
@@ -63,6 +71,14 @@ onMounted(() => {
           :current-time="currentTime"
           @toggle="toggle"
           @reset="reset"
+          @add-lap="addLap"
+        />
+
+        <LapTimeList
+          :lap-times="lapTimes"
+          :lap-stats="lapStats"
+          :format-time="formatTime"
+          @clear-laps="clearLaps"
         />
 
         <div class="keyboard-shortcuts" v-if="!isMobile">
@@ -74,13 +90,16 @@ onMounted(() => {
             <span class="shortcut">
               <kbd>R</kbd> 리셋
             </span>
+            <span class="shortcut">
+              <kbd>L</kbd> 랩 타임
+            </span>
           </div>
         </div>
       </div>
     </main>
 
     <footer class="app-footer">
-      <p>&copy; 2024 스톱워치 앱 - Phase 1 기본 버전</p>
+      <p>&copy; 2024 스톱워치 앱 - Phase 2 고급 버전</p>
     </footer>
   </div>
 </template>

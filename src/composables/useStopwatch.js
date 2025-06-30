@@ -6,6 +6,7 @@ export function useStopwatch() {
   const startTime = ref(0)
   const elapsedTime = ref(0)
   const currentTime = ref(0)
+  const lapTimes = ref([])
   
   let animationFrameId = null
   let intervalId = null
@@ -23,6 +24,37 @@ export function useStopwatch() {
       .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds
       .toString()
       .padStart(2, '0')}`
+  })
+
+  // 시간 포맷 유틸리티 함수
+  const formatTime = (ms) => {
+    const hours = Math.floor(ms / 3600000)
+    const minutes = Math.floor((ms % 3600000) / 60000)
+    const seconds = Math.floor((ms % 60000) / 1000)
+    const milliseconds = Math.floor((ms % 1000) / 10)
+
+    return `${hours.toString().padStart(2, '0')}:${minutes
+      .toString()
+      .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds
+      .toString()
+      .padStart(2, '0')}`
+  }
+
+  // 랩 타임 통계 계산
+  const lapStats = computed(() => {
+    if (lapTimes.value.length === 0) return null
+
+    const times = lapTimes.value.map(lap => lap.time)
+    const min = Math.min(...times)
+    const max = Math.max(...times)
+    const avg = times.reduce((sum, time) => sum + time, 0) / times.length
+
+    return {
+      fastest: min,
+      slowest: max,
+      average: avg,
+      total: lapTimes.value.length
+    }
   })
 
   // 타이머 업데이트 함수
@@ -60,11 +92,36 @@ export function useStopwatch() {
     startTime.value = 0
     elapsedTime.value = 0
     currentTime.value = 0
+    lapTimes.value = []
     
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId)
       animationFrameId = null
     }
+  }
+
+  // 랩 타임 추가
+  const addLap = () => {
+    if (currentTime.value > 0) {
+      const lapNumber = lapTimes.value.length + 1
+      const lapTime = currentTime.value
+      const previousLapTime = lapTimes.value.length > 0 ? lapTimes.value[lapTimes.value.length - 1].totalTime : 0
+      const splitTime = lapTime - previousLapTime
+
+      lapTimes.value.push({
+        id: lapNumber,
+        time: splitTime,
+        totalTime: lapTime,
+        formattedTime: formatTime(splitTime),
+        formattedTotalTime: formatTime(lapTime),
+        timestamp: new Date().toLocaleTimeString()
+      })
+    }
+  }
+
+  // 랩 타임 삭제
+  const clearLaps = () => {
+    lapTimes.value = []
   }
 
   // 시작/일시정지 토글
@@ -91,11 +148,16 @@ export function useStopwatch() {
     isRunning,
     currentTime,
     formattedTime,
+    lapTimes,
+    lapStats,
     
     // 메서드
     start,
     pause,
     reset,
-    toggle
+    toggle,
+    addLap,
+    clearLaps,
+    formatTime
   }
 } 
