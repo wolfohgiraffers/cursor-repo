@@ -51,12 +51,13 @@ onMounted(() => {
 
 <template>
   <div id="app">
-    <header class="app-header">
+    <!-- <header class="app-header">
       <h1 class="app-title">
         <span class="icon">⏱️</span>
         스톱워치
       </h1>
       <p class="app-subtitle">정확하고 직관적인 시간 측정</p>
+    </header> -->
 
     <main class="app-main">
       <div class="container">
